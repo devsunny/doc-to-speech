@@ -1,6 +1,6 @@
 # Doc-to-Speech
 
-A Python library for converting various document formats to speech using VibeVoice TTS (Text-to-Speech) model.
+A Python library and CLI tool for converting various document formats to speech using VibeVoice TTS (Text-to-Speech) model.
 
 ## Features
 
@@ -10,6 +10,7 @@ A Python library for converting various document formats to speech using VibeVoi
 - **Smart Text Processing**: Handles long documents by intelligently chunking text while preserving word boundaries
 - **Configurable Voice**: Supports custom voice samples for personalized speech synthesis
 - **GPU Acceleration**: Optimized for CUDA, MPS, and CPU execution
+- **Command Line Interface**: Easy-to-use CLI for batch processing and automation
 
 ## Supported Document Formats
 
@@ -33,7 +34,23 @@ pip install doc-to-speech
 
 ## Quick Start
 
-### Basic Usage
+### CLI Usage (Recommended for most users)
+
+```bash
+# Convert a document to WAV
+dts wav --source document.pdf --output speech.wav
+
+# Convert a document to MP3  
+dts mp3 --source document.txt --output speech.mp3
+
+# Convert WAV to MP3
+dts wav2mp3 --source audio.wav --output compressed.mp3
+
+# Get help
+dts --help
+```
+
+### Python API Usage
 
 ```python
 from dts.speaker import DocumentToSpeech
@@ -46,6 +63,66 @@ tts.doc_to_wav("document.pdf", "output.wav")
 
 # Convert a document to MP3 audio
 tts.doc_to_mp3("document.txt", "output.mp3")
+```
+
+## Command Line Interface
+
+After installation, you can use the CLI commands for quick conversions:
+
+### Available Commands
+
+```bash
+# Convert documents to WAV format
+dts wav --source document.pdf --output speech.wav
+dts wav -s folder_with_docs/ -o output.wav
+
+# Convert documents to MP3 format  
+dts mp3 --source document.txt --output speech.mp3
+dts mp3 -s folder_with_docs/ -o output.mp3
+
+# Convert existing WAV files to MP3
+dts wav2mp3 --source audio.wav --output compressed.mp3
+dts wav2mp3 -s audio_folder/ -o output.mp3
+```
+
+### CLI Examples
+
+#### Single File Conversion
+```bash
+# Convert a PDF to speech
+dts wav -s report.pdf -o report_audio.wav
+
+# Convert a text file to MP3
+dts mp3 -s notes.txt -o notes_audio.mp3
+```
+
+#### Batch Processing
+```bash
+# Convert all documents in a folder to WAV
+dts wav -s documents/ -o batch_output.wav
+
+# Convert all documents in a folder to MP3
+dts mp3 -s documents/ -o batch_output.mp3
+
+# Convert all WAV files in a folder to MP3
+dts wav2mp3 -s audio_files/ -o compressed_output.mp3
+```
+
+#### Getting Help
+```bash
+# Show general help
+dts --help
+
+# Show help for specific commands
+dts wav --help
+dts mp3 --help
+dts wav2mp3 --help
+```
+
+Alternative command name:
+```bash
+# You can also use the full name
+doc-to-speech wav -s document.pdf -o output.wav
 ```
 
 ### Advanced Configuration
@@ -225,7 +302,39 @@ The library gracefully handles common issues:
 
 ## Examples
 
-### Convert Multiple Documents
+### CLI Examples
+
+#### Convert Multiple Documents with CLI
+```bash
+# Convert all PDFs in a directory to WAV
+dts wav -s documents/ -o audio/
+
+# Convert specific file types to MP3
+find documents/ -name "*.pdf" -exec dts mp3 -s {} -o audio/{}.mp3 \;
+
+# Convert and compress existing audio
+dts wav2mp3 -s generated_audio/ -o compressed/
+```
+
+#### Automated Batch Processing
+```bash
+#!/bin/bash
+# Script to process different document types
+
+# Process all text files
+for file in documents/*.txt; do
+    dts wav -s "$file" -o "audio/$(basename "$file" .txt).wav"
+done
+
+# Process all PDFs  
+for file in documents/*.pdf; do
+    dts mp3 -s "$file" -o "audio/$(basename "$file" .pdf).mp3"
+done
+```
+
+### Python API Examples
+
+#### Convert Multiple Documents
 
 ```python
 import os
@@ -243,7 +352,7 @@ for filename in os.listdir(pdf_dir):
         print(f"Converted {filename} to audio")
 ```
 
-### Batch Processing with Progress
+#### Batch Processing with Progress
 
 ```python
 documents = ["doc1.pdf", "doc2.txt", "doc3.html"]
@@ -255,7 +364,7 @@ for i, doc in enumerate(documents, 1):
     tts.doc_to_mp3(doc, output_file, progress=True)
 ```
 
-### Custom Voice with Text Input
+#### Custom Voice with Text Input
 
 ```python
 from dts.vibevoice_tts import TextToSpeech
@@ -264,6 +373,37 @@ from dts.vibevoice_tts import TextToSpeech
 tts = TextToSpeech(sample_voice_file="my_voice.wav")
 text = "This is a test of custom voice synthesis."
 tts.convert_text_to_wav(text, "custom_output.wav")
+```
+
+### Combining CLI and Python API
+
+```python
+import subprocess
+import os
+
+# Use CLI for bulk conversion, then Python API for custom processing
+def hybrid_processing():
+    # Step 1: Use CLI for fast batch conversion
+    subprocess.run([
+        "dts", "wav", 
+        "-s", "documents/", 
+        "-o", "temp_audio/"
+    ])
+    
+    # Step 2: Use Python API for custom post-processing
+    from dts.vibevoice_tts import TextToSpeech
+    tts = TextToSpeech()
+    
+    # Custom voice processing on generated files
+    for wav_file in os.listdir("temp_audio/"):
+        if wav_file.endswith(".wav"):
+            # Additional processing or format conversion
+            mp3_file = wav_file.replace(".wav", ".mp3")
+            subprocess.run([
+                "dts", "wav2mp3", 
+                "-s", f"temp_audio/{wav_file}", 
+                "-o", f"final_audio/{mp3_file}"
+            ])
 ```
 
 ## Contributing
@@ -285,6 +425,7 @@ Key dependencies include:
 - **Docling**: Universal document processing
 - **librosa**: Audio processing
 - **pydub**: Audio format conversion
+- **Click**: Command-line interface framework
 
 See `pyproject.toml` for the complete dependency list.
 
@@ -296,9 +437,13 @@ See `pyproject.toml` for the complete dependency list.
 2. **Unsupported Document Format**: Check if format is in supported list
 3. **Audio Quality Issues**: Verify voice sample quality and format
 4. **Slow Processing**: Enable GPU acceleration if available
+5. **CLI Command Not Found**: Ensure package is installed in the correct environment
+6. **Permission Errors**: Check file permissions for input and output directories
 
 ### Getting Help
 
+- Use `dts --help` for CLI usage information
+- Use `dts <command> --help` for specific command help
 - Check the documentation for parameter details
 - Verify input document format compatibility
 - Ensure proper PyTorch installation for your system
