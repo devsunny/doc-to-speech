@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "doc-to-speech"
-version = "0.1.0"
-description = "A Python library for converting various document formats to speech using VibeVoice TTS (Text-to-Speech) model."
+version = "0.1.1"
+description = "A Python library and CLI tool for converting various document formats to speech using VibeVoice TTS (Text-to-Speech) model."
 readme = "README.md"
 requires-python = ">=3.12"
 license = "MIT"
@@ -15,17 +15,20 @@ authors = [
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Topic :: Multimedia :: Sound/Audio :: Speech",
     "Topic :: Software Development :: Libraries :: Python Modules",
+    "Environment :: Console",
+    "Operating System :: OS Independent",
 ]
-keywords = ["text-to-speech", "tts", "document", "audio", "speech", "vibevoice"]
+keywords = ["text-to-speech", "tts", "document", "audio", "speech", "vibevoice", "cli", "command-line", "conversion"]
 
 dependencies = [
   "torch>=2.5.0",
-  "torchvision>=0.20.0", 
+  "torchvision>=0.20.0",
   "torchaudio>=2.5.0",
   "soundfile",
   "librosa",
@@ -38,6 +41,7 @@ dependencies = [
   "docling>=2.60.0",
   "pydub>=0.25.1",
   "vibevoice",
+  "click>=8.3.0",
 ]
 
 [project.urls]
@@ -45,6 +49,10 @@ Homepage = "https://github.com/devsunny/doc-to-speech"
 Repository = "https://github.com/devsunny/doc-to-speech"
 Issues = "https://github.com/devsunny/doc-to-speech/issues"
 Documentation = "https://github.com/devsunny/doc-to-speech/README.md"
+
+[project.scripts]
+dts = "main:main"
+doc-to-speech = "main:main"
 
 [project.optional-dependencies]
 dev = [
@@ -57,7 +65,7 @@ dev = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["dts*"]
+include = ["dts*", "main.py"]
 
 [tool.setuptools.package-data]
 "dts" = ["*.wav", "*.json"]

@@ -2,6 +2,7 @@ include README.md
 include LICENSE
 include pyproject.toml
 include pytest.ini
+include main.py
 recursive-include dts *.py
 recursive-include dts *.wav
 recursive-include dts *.json
