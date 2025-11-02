@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "doc-to-speech"
-version = "0.1.1"
+version = "0.1.2"
 description = "A Python library and CLI tool for converting various document formats to speech using VibeVoice TTS (Text-to-Speech) model."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -42,6 +42,7 @@ dependencies = [
   "pydub>=0.25.1",
   "vibevoice",
   "click>=8.3.0",
+  "hf-xet>=1.2.0",
 ]
 
 [project.urls]
